@@ -1,0 +1,338 @@
+#   IMPORT LIBRARIES
+
+import requests
+import urllib.parse
+from bs4 import BeautifulSoup
+import pandas as pd
+import openpyxl
+
+
+#   HTTP REQUEST
+website = 'https://www.flipkart.com/search?q=asus+notebooks&sid=6bo%2Cb5g&as=on&as-show=on&otracker=AS_QueryStore_OrganicAutoSuggest_1_14_sc_na_ps&otracker1=AS_QueryStore_OrganicAutoSuggest_1_14_sc_na_ps&as-pos=1&as-type=RECENT&suggestionId=asus+notebooks%7CLaptops&requestId=ce4df6e8-99fe-42ce-85ed-dd92021e96b9&as-searchtext=acus%20notebooks'
+
+# RESPONSE
+response = requests.get(website)
+a = response.status_code
+print(a)
+
+# SOUP OBJECT
+soup = BeautifulSoup(response.content, 'html.parser')
+#print(soup.prettify())
+
+# RESULT
+results = soup.find_all('div', {'class': '_13oc-S'})
+# print(results[0].prettify())
+#print(len(results))
+
+# NAME
+name = results[0].find('div', {'class': '_4rR01T'}).get_text()
+# print(name)
+
+# PRICE
+p = results[0].find('div', {'class': '_30jeq3 _1_WHN1'}).get_text().replace('₹', 'Rs: ')
+# print(p)
+
+# STAR RATING
+r = results[0].find('div', {'class': '_3LWZlK'}).get_text()
+# print(r)
+
+# RATING AND REVIEWS
+rev = results[0].find('span', {'class': '_2_R_DZ'}).get_text()
+# print(rev)
+
+# LINK
+relative_url = results[0].find('a', {'class': '_1fQZEK'}).get("href")
+# print(relative_url)
+
+# ROOT URL
+root_url = 'https://www.flipkart.com'
+# print(root_url)
+
+# URL COMBINE
+combine_url = root_url + relative_url
+# print(combine_url)
+
+# CREATE A LIST
+product_name = []
+product_price = []
+product_star_rating = []
+product_reviews = []
+relative_url = []
+
+# USING FOR LOOP ADD EVERYTHING IN A LIST
+for result in results:
+    # 1.name
+    try:
+        product_name.append(result.find('div', {'class': '_4rR01T'}).get_text())
+    except:
+        product_name.append('n/a')
+# print(product_name)
+# print(len(product_name))
+
+    # 2.price
+    try:
+        product_price.append(result.find('div', {'class': '_30jeq3 _1_WHN1'}).get_text().replace('₹', 'Rs: '))
+    except:
+        product_price.append('n/a')
+# print(product_price)
+# print(len(product_price))
+
+    # 3.star rating
+    try:
+        product_star_rating.append(result.find('div', {'class': '_3LWZlK'}).get_text())
+    except:
+        product_star_rating.append('n/a')
+# print(product_star_rating)
+# print(len(product_star_rating))
+
+# 4.reviews
+    try:
+        product_reviews.append(result.find('span', {'class': '_2_R_DZ'}).get_text())
+    except:
+        product_reviews.append('n/a')
+# print(product_reviews)
+# print(len(product_reviews))
+
+# 5. relative_url
+    try:
+        relative_url.append(result.find('a', {'class': '_1fQZEK'}).get('href'))
+    except:
+        relative_url.append('n/a')
+# print(relative_url)
+# print(len(relative_url))
+
+# url_combined
+url_combined = []
+for link in relative_url:
+    url_combined.append(urllib.parse.urljoin(root_url, link))
+# print(url_combined)
+# print(len(url_combined))
+
+# create pandas Dataframe
+df = pd.DataFrame({'Name': product_name,
+                   'Price': product_price,
+                   'Star_Rating': product_star_rating,
+                   'Reviews': product_reviews,
+                   'Product_link': url_combined})
+# print(df)
+
+# Output in Excel
+df.to_excel("saran12_project.xlsx", index=False)
+print("completed successfully")
+
+---------------------------------------------------------------------------------------------------------------------
+#   IMPORT LIBRARIES
+
+import requests
+import urllib.parse
+from bs4 import BeautifulSoup
+import pandas as pd
+import openpyxl
+
+#   HTTP REQUEST
+
+website = 'https://www.flipkart.com/search?q=mobiles&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=off&as=off'
+response = requests.get(website)
+
+a = response.status_code
+# print(a)
+
+soup = BeautifulSoup(response.content, 'html.parser')
+# print(soup.prettify())
+
+results = soup.find_all('div', {'class': '_13oc-S'})
+# print(results[0].prettify())
+# print(len(results))
+
+
+
+name = results[0].find('div', {'class': '_4rR01T'}).get_text()
+# print(name)
+
+p = results[0].find('div', {'class': '_30jeq3 _1_WHN1'}).get_text().replace('₹', 'Rs: ')
+# print(p)
+
+# STAR RATING
+r = results[0].find('div', {'class': '_3LWZlK'}).get_text()
+# print(r)
+
+# RATING AND REVIEWS
+rev = results[0].find('span', {'class': '_2_R_DZ'}).get_text()
+# print(rev)
+
+# LINK
+relative_url = results[0].find('a', {'class': '_1fQZEK'}).get("href")
+# print(relative_url)
+
+root_url = 'https://www.flipkart.com'
+# print(root_url)
+
+combine_url = root_url + relative_url
+# print(combine_url)
+
+product_name = []
+product_price = []
+product_star_rating = []
+product_reviews = []
+relative_url = []
+
+
+for result in results:
+    # 1.name
+    try:
+        product_name.append(result.find('div', {'class': '_4rR01T'}).get_text())
+    except:
+        product_name.append('n/a')
+# print(product_name)
+# print(len(product_name))
+
+    # 2.price
+    try:
+        product_price.append(result.find('div', {'class': '_30jeq3 _1_WHN1'}).get_text().replace('₹', 'Rs: '))
+    except:
+        product_price.append('n/a')
+# print(product_price)
+# print(len(product_price))
+
+    # 3.star rating
+    try:
+        product_star_rating.append(result.find('div', {'class': '_3LWZlK'}).get_text())
+    except:
+        product_star_rating.append('n/a')
+# print(product_star_rating)
+# print(len(product_star_rating))
+
+# 4.reviews
+    try:
+        product_reviews.append(result.find('span', {'class': '_2_R_DZ'}).get_text())
+    except:
+        product_reviews.append('n/a')
+# print(product_reviews)
+# print(len(product_reviews))
+
+# 5. relative_url
+    try:
+        relative_url.append(result.find('a', {'class': '_1fQZEK'}).get('href'))
+    except:
+        relative_url.append('n/a')
+# print(relative_url)
+# print(len(relative_url))
+
+# url_combined
+url_combined = []
+for link in relative_url:
+    url_combined.append(urllib.parse.urljoin(root_url, link))
+# print(url_combined)
+# print(len(url_combined))
+
+# create pandas Dataframe
+# df = pd.DataFrame({'Name': product_name,
+#                   'Price': product_price,
+#                   'Star_Rating': product_star_rating,
+#                   'Reviews': product_reviews,
+#                  'Product_link': url_combined})
+# print(df)
+
+# Output in Excel
+# df.to_excel("saran_project.xlsx", index=False)
+# print("completed successfully")
+
+# TO SCRAP THE WHOLE WEB PAGE
+product_name = []
+product_price = []
+product_star_rating = []
+product_reviews = []
+relative_url = []
+
+for i in range(1, 5):
+
+    # website
+    website = 'https://www.flipkart.com/search?q=mobiles&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=off&as=off&page='+ str(i)
+
+    # request
+    response = requests.get(website)
+
+    # soup object
+    soup = BeautifulSoup(response.content, 'html.parser')
+    # print(soup.prettify())
+
+    # results
+    results = soup.find_all('div', {'class': '_13oc-S'})
+    # print(results[0].prettify())
+    # print(len(results))
+
+    for result in results:
+
+        # 1.name
+        try:
+            product_name.append(result.find('div', {'class': '_4rR01T'}).get_text())
+        except:
+            product_name.append('n/a')
+    # print(product_name)
+    # print(len(product_name))
+
+        # 2.price
+        try:
+            product_price.append(result.find('div', {'class': '_30jeq3 _1_WHN1'}).get_text().replace('₹', 'Rs: '))
+        except:
+            product_price.append('n/a')
+    # print(product_price)
+    # print(len(product_price))
+
+        # 3.star rating
+        try:
+            product_star_rating.append(result.find('div', {'class': '_3LWZlK'}).get_text())
+        except:
+            product_star_rating.append('n/a')
+    # print(product_star_rating)
+    # print(len(product_star_rating))
+
+    # 4.reviews
+        try:
+            product_reviews.append(result.find('span', {'class': '_2_R_DZ'}).get_text())
+        except:
+            product_reviews.append('n/a')
+    # print(product_reviews)
+    # print(len(product_reviews))
+
+    # 5. relative_url
+        try:
+            relative_url.append(result.find('a', {'class': '_1fQZEK'}).get('href'))
+        except:
+            relative_url.append('n/a')
+    # print(relative_url)
+    # print(len(relative_url))
+
+    # url_combined
+    url_combined = []
+    for link in relative_url:
+        url_combined.append(urllib.parse.urljoin(root_url, link))
+    #print(url_combined)
+    #print(len(url_combined))
+    #print(root_url)
+
+# create pandas Dataframe
+df = pd.DataFrame({
+                    'Name': product_name,
+                    'Price': product_price,
+                    'Star_Rating': product_star_rating,
+                    'Reviews': product_reviews,
+                    'Product_link': url_combined
+                })
+print(df)
+
+# Output in Excel
+df.to_excel("web_pages.xlsx", index=False)
+print("completed successfully")
+
+..............................................................................................................................................
+
+# Needed Library
+
+beautifulsoup4   4.11.1
+bs4                   0.0.1
+openpyxl           3.0.10
+pandas              1.5.0
+requests            2.28.1
+response            0.5.0
+urllib3                1.26.12
